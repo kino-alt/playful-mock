@@ -41,7 +41,7 @@ export function ReviewAnswer({roomCode}:  { roomCode: string }) {
                 height="py-0.5"
                 variant="primary"
                 textSize="text-sm"
-                marginBottom="mb-2"
+                marginBottom="mb-4"
             />
 
             <TextInput
@@ -49,11 +49,10 @@ export function ReviewAnswer({roomCode}:  { roomCode: string }) {
                 onChange={setTopic}
                 inputtitle=""
                 placeholder=""
-                height="py-2"
+                height="py-4"
                 variant="primary"
                 mode="display"
                 textSize="text-lg"
-                marginBottom="mb-6"
             />
 
             <TextInput
@@ -61,11 +60,11 @@ export function ReviewAnswer({roomCode}:  { roomCode: string }) {
                 onChange={setAnswer}
                 inputtitle=""
                 placeholder=""
-                height="py-2"
+                height="py-4"
                 variant="secondary"
                 mode="display"
                 textSize="text-lg"
-                marginBottom="mb-6"
+                marginBottom="mb-4"
             />
 
             <DisplaySelectedEmojis
@@ -76,7 +75,7 @@ export function ReviewAnswer({roomCode}:  { roomCode: string }) {
 
             {/*submit button*/}
             <div className="mt-auto">
-            <GameButton variant="primary" onClick={handleSubmit} height="py-2">
+            <GameButton variant="primary" onClick={handleSubmit}>
                 Exit 
             </GameButton>
             </div>  
