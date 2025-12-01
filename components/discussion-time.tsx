@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import { PageHeader } from "./page-header"
-import { TextInput } from "./text-input"
 import { TextDisplay } from "./text-display"
 import { CountTimer } from "./count-timer"
 import { api } from "@/lib/api"
@@ -14,30 +13,10 @@ export function DiscussionTime({roomCode}:  { roomCode: string }) {
   const [isLoading, setIsLoading] = useState(true)
   const [emoji, setEmoji] = useState("")
 
-  //get emoji
-  useEffect(() => {
-      const SetEmoji = async () => {
-        try {
-          console.log("[v0] Setting emoji...")
-          const data = await api.getEmoji(roomCode.toUpperCase())
-          console.log("[v0] Emoji set response:", data)
-  
-          if (data.success) {
-            setEmoji(data.emoji)
-            console.log("[v0] Emoji set:", data.theme)
-          } else {
-            console.error("Failed to set emoji:", data.error)
-          }
-        } catch (error) {
-          console.error("Error setting emoji:", error)
-        } finally {
-          setIsLoading(false)
-        }
-      }
-      SetEmoji()
-    }, [])
+  // temporary values
+  setEmoji("👑")
+  setIsLoading(false)
 
-    
   return (
     <EmojiBackgroundLayout>
       <div className="w-full max-w-xs flex flex-col h-full">
@@ -66,8 +45,7 @@ export function DiscussionTime({roomCode}:  { roomCode: string }) {
               
                 <div className="absolute inset-0 flex items-center justify-center transform translate-y-[-15px]">
                     <p className="text-8xl font-bold">
-                        {"👑"} 
-                        {/*{isLoading ? "..." : emoji}*/}
+                        {isLoading ? "..." : emoji}
                     </p>
                 </div>
                 

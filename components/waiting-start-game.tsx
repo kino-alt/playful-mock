@@ -12,28 +12,8 @@ export default function WaitingSartGame({roomCode }: { roomCode: string }) {
    const [participants, setParticipants] = useState<string[]>([])
    const router = useRouter()
 
-  //参加者リスト更新
-    useEffect(() => {
-      if (!roomCode) return
-  
-      console.log("[v0] Connecting to WebSocket for room:", roomCode)
-      const ws = api.connectWebSocket(roomCode, (data) => {
-        console.log("[v0] Received WebSocket message:", data)
-        if (data.participants) {
-          setParticipants(data.participants)
-        }
-        if (data.type === "game_start") {
-        console.log("[v0] Game started, redirecting to waiting-create-topic")
-        router.push(`/room/${roomCode}/waiting-set-topic`)
-      }
-      })
-  
-      // クリーンアップ: コンポーネントのアンマウント時にWebSocket接続を閉じる
-      return () => {
-        console.log("[v0] Closing WebSocket connection")
-        ws.close()
-      }
-    }, [roomCode,router])
+   // Temporary: Mock participants data
+   setParticipants(["Alice", "Bob", "Charlie", "David", "Eve"]) 
 
   return (
     <EmojiBackgroundLayout>

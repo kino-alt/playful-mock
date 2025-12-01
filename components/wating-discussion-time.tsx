@@ -14,29 +14,12 @@ export function WaitingDiscussionTime({roomCode}:  { roomCode: string }) {
     const [topic, setTopic] = useState("")
     const [isLoading, setIsLoading] = useState(true)
 
-    //set theme/topic
-    useEffect(() => {
-        const GetThemeAndTopic = async () => {
-            try {
-                console.log("[v0] Getting the theme and topic...")
-                const data = await api.createTheme(roomCode.toUpperCase())
-                console.log("[v0] Theme and topic got response:", data)
-        
-                if (data.success) {
-                setTheme(data.theme)
-                setTopic(data.topic)
-                console.log("[v0] Theme and topic set:", data.theme)
-                } else {
-                console.error("Failed to get theme and topic:", data.error)
-                }
-            } catch (error) {
-                console.error("Error getting theme and topic:", error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        GetThemeAndTopic()
-    }, [])
+    // temporary values
+    setTheme("Theme")
+    setTopic("Topic")
+    setIsLoading(false)
+    const selectedEmojis: string[] = []
+    const maxEmojis = 7
 
     return (
         <EmojiBackgroundLayout>
@@ -68,9 +51,9 @@ export function WaitingDiscussionTime({roomCode}:  { roomCode: string }) {
             <CountTimer roomCode={roomCode}/>
 
             <DisplaySelectedEmojis
-                selectedEmojis={[]}
+                selectedEmojis={selectedEmojis}
                 handleRemoveEmoji={() => {}}
-                maxEmojis={7}
+                maxEmojis={maxEmojis}
             />    
             
         </div>

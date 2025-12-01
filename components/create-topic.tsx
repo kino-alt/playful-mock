@@ -20,11 +20,14 @@ export function CreateTopic({roomCode}:  { roomCode: string }) {
   const [showHintOverlay, setShowHintOverlay] = useState(false)
   const [selectedEmojis, setSelectedEmojis] = useState<string[]>([])
   const router = useRouter()
-
-  const maxEmojis = 7
-  
   const EMOJI_REGEX = /^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$/u;
 
+  // temporary values
+  setTheme("Theme")
+  setIsLoading(false)
+  setHint("Hint: Choose emojis that represent the topic well.")
+  const maxEmojis = 7
+  
   const handleEmojiInputChange = (value: string) => {
     const newChar = value.slice(-1); 
     

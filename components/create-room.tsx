@@ -19,47 +19,10 @@ export default function CreateRoom({ participants : initialParticipants = [] }: 
   const [participants, setParticipants] = useState<string[]>(initialParticipants)
   const router = useRouter()
 
-  //create room code
-  useEffect(() => {
-    const createRoom = async () => {
-      try {
-        console.log("[v0] Creating room...")
-        const data = await api.createRoom()
-        console.log("[v0] Room created response:", data)
-
-        if (data.success) {
-          setRoomCode(data.roomCode)
-          console.log("[v0] Room code set:", data.roomCode)
-        } else {
-          console.error("Failed to create room:", data.error)
-        }
-      } catch (error) {
-        console.error("Error creating room:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    createRoom()
-  }, [])
-
-  //参加者リスト更新
-  useEffect(() => {
-    if (!roomCode) return
-
-    console.log("[v0] Connecting to WebSocket for room:", roomCode)
-    const ws = api.connectWebSocket(roomCode, (data) => {
-      console.log("[v0] Received WebSocket message:", data)
-      if (data.participants) {
-        setParticipants(data.participants)
-      }
-    })
-
-    // クリーンアップ: コンポーネントのアンマウント時にWebSocket接続を閉じる
-    return () => {
-      console.log("[v0] Closing WebSocket connection")
-      ws.close()
-    }
-  }, [roomCode])
+  // Temporary: Mock room code and participants data
+  setRoomCode("ABC123")
+  setParticipants(["Alice", "Bob", "Charlie", "David", "Eve"])
+  setIsLoading(false)
 
   const handleStartGame = async () => {
     if (!roomCode || participants.length<3 || participants.length>7) return

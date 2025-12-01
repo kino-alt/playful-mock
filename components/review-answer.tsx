@@ -15,31 +15,13 @@ export function ReviewAnswer({roomCode}:  { roomCode: string }) {
     const [answer, setAnswer] = useState("")
     const [isLoading, setIsLoading] = useState(true)
 
-    //set theme/topic
-    useEffect(() => {
-        const GetThemeAndTopic = async () => {
-            try {
-                console.log("[v0] Getting the theme and topic...")
-                const data = await api.createTheme(roomCode.toUpperCase())
-                console.log("[v0] Theme and topic got response:", data)
-        
-                if (data.success) {
-                setTheme(data.theme)
-                setTopic(data.topic)
-                setAnswer(data.answer)
-                console.log("[v0] Theme and topic set:", data.theme)
-                } else {
-                console.error("Failed to get theme and topic:", data.error)
-                }
-            } catch (error) {
-                console.error("Error getting theme and topic:", error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        GetThemeAndTopic()
-    }, [])
+    // temporary values
+    setTheme("Theme")
+    setTopic("Topic")
+    setAnswer("Sample Answer")
+    setIsLoading(false)
 
+    //temporary submit handler
     const handleSubmit = async () => {
         console.log("[v0] Exitting for room:", roomCode)
         window.location.href = "/"
