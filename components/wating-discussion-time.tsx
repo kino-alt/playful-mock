@@ -7,6 +7,7 @@ import { TextInput } from "./text-input"
 import { TextDisplay } from "./text-display"
 import { CountTimer } from "./count-timer"
 import { api } from "@/lib/api"
+import { DisplaySelectedEmojis } from "./display-selected-emojis"
 
 export function WaitingDiscussionTime({roomCode}:  { roomCode: string }) {
     const [theme, setTheme] =useState("")
@@ -66,7 +67,11 @@ export function WaitingDiscussionTime({roomCode}:  { roomCode: string }) {
         
             <CountTimer roomCode={roomCode}/>
 
-            
+            <DisplaySelectedEmojis
+                selectedEmojis={[]}
+                handleRemoveEmoji={() => {}}
+                maxEmojis={7}
+            />    
             
         </div>
         </EmojiBackgroundLayout>

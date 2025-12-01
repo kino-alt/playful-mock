@@ -45,6 +45,18 @@ export const api = {
     return response.json()
   },
 
+  // Submit topic API(HTTP)
+  submitTopic: async (roomCode: string, topic:string, emoji:[]) => {
+    const response = await fetch(`${API_BASE_URL}/api/rooms/${roomCode}/answer`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ roomCode, topic, emoji }),
+    })
+    return response.json()
+  },
+
   submitAnswer: async (roomCode: string, answer: string) => {
     const response = await fetch(`${API_BASE_URL}/api/rooms/${roomCode}/answer`, {
       method: "POST",

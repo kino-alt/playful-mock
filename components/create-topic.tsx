@@ -6,6 +6,8 @@ import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import { PageHeader } from "./page-header"
 import { TextInput } from "./text-input"
 import { TextDisplay} from "./text-display"
+import { DisplaySelectedEmojis } from "./display-selected-emojis"
+import { useRouter } from "next/navigation"
 import { api } from "@/lib/api"
 
 
@@ -15,33 +17,24 @@ export function CreateTopic({roomCode}:  { roomCode: string }) {
   const [isLoading, setIsLoading] = useState(true)
   const [emojiInput, setEmojiInput] = useState("")
   const [hint, setHint] = useState("")
+  const [showHintOverlay, setShowHintOverlay] = useState(false)
   const [selectedEmojis, setSelectedEmojis] = useState<string[]>([])
+  const router = useRouter()
+
+  const maxEmojis = 7
   
-  //create theme
-  useEffect(() => {
-      const CreateTheme = async () => {
-        try {
-          console.log("[v0] Creating the theme...")
-          const data = await api.createTheme(roomCode.toUpperCase())
-          console.log("[v0] Theme created response:", data)
-  
-          if (data.success) {
-            setTheme(data.theme)
-            console.log("[v0] Room code set:", data.theme)
-          } else {
-            console.error("Failed to create room:", data.error)
-          }
-        } catch (error) {
-          console.error("Error creating room:", error)
-        } finally {
-          setIsLoading(false)
-        }
-      }
-      CreateTheme()
-    }, [])
+  const EMOJI_REGEX = /^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$/u;
+
+  const handleEmojiInputChange = (value: string) => {
+    const newChar = value.slice(-1); 
+    
+    if (newChar === "" || EMOJI_REGEX.test(newChar)) {
+      setEmojiInput(newChar);
+    }
+  };
     
   const handleAddEmoji = () => {
-    if (emojiInput.trim() && selectedEmojis.length < 7) {
+    if (emojiInput.trim() && selectedEmojis.length < maxEmojis) {
       setSelectedEmojis([...selectedEmojis, emojiInput.trim()])
       setEmojiInput("")
     }
@@ -57,86 +50,95 @@ export function CreateTopic({roomCode}:  { roomCode: string }) {
       return
     }
 
-    console.log("[v0] Submitting topic:", {
-      roomCode,
-      topic,
-      emojis: selectedEmojis,
-      hint,
-    })
-    // バックエンドへの送信処理を追加予定
+    try {
+      console.log("[v0] Starting game for room:", roomCode)
+      const data = await api.submitTopic(roomCode, topic.trim(), selectedEmojis as unknown as [])
+
+      if (data.success) {
+        router.push(`/room/${roomCode.toUpperCase()}/waiting-discussion-time`)
+      } else {
+        console.error("Failed to start game:", data.error)
+        alert("Failed to start game")
+      }
+    } catch (error) {
+      console.error("Error starting game:", error)
+      alert("Failed to start game")
+    }
   }
 
   return (
     <EmojiBackgroundLayout>
       <div className="w-full max-w-xs flex flex-col h-full">
-        <PageHeader title="Set the Topic" subtitle={`Set the topic and choose the emojis`} />
+        <PageHeader title="Set the Topic" subtitle={`Set the topic and choose the emojis`} marginBottom="mb-2" />
 
         <TextDisplay
-          value={topic}
+          value={isLoading ? "Loading..." : theme}
           inputtitle=""
-          height="py-1"
+          height="py-0.5"
           variant="primary"
-          textSize="text-base"
+          textSize="text-sm"
+          marginBottom="mb-2"
         />
 
         <TextInput
           value={topic}
           onChange={setTopic}
-          inputtitle="Topic"
+          inputtitle=""
           placeholder="Enter the Topic"
           height="py-2"
           variant="primary"
           mode="edit"
           textSize="text-lg"
+          marginBottom="mb-6"
         />
 
-        <div className="flex items-end justify-center gap-3 mb-6 ">
-          <div className="w-23 h-23"> 
+        <div className="flex items-end justify-center gap-3 mb-8 ml-13">
+          <div className="relative w-24 h-24">
+            {/* Hint Overlay Button */}
+            <button
+                onClick={() => setShowHintOverlay(true)}
+                className="absolute top-2 -left-9 z-10 w-6 h-6 rounded-full bg-yellow-400 text-white font-bold flex items-center justify-center text-sm shadow-md hover:bg-yellow-500 transition-colors"
+                title="Refer to Hints"
+            >
+                !
+            </button>
+
+            {/*select emoji input*/}
             <TextInput
               value={emojiInput}
-              onChange={setEmojiInput}
-              inputtitle="Select"
+              onChange={handleEmojiInputChange}
+              inputtitle="" 
               placeholder=""
               maxLength={1}
               height="py-8"
               variant="gray"
               mode="edit"
-              textSize="text-10lx"
+              textSize="text-xl"
+              marginBottom="mb-2"
+              isEmojiInput={true}
             />
+            <p className="text-xs text-gray-500 font-semibold uppercase text-center mt-2">Select Emoji</p>
           </div>
-          <div className="flex-shrink-0">
-            <GameButton variant="secondary" onClick={handleAddEmoji} height="py-1">
+          
+           {/* Add button */}
+          <div className="flex-shrink-0 mb-1"> 
+            <GameButton variant="secondary" onClick={handleAddEmoji} height="p-2"> 
               <p className="text-xs font-bold uppercase"> ADD</p>
             </GameButton>
           </div>
         </div>
 
-        <TextDisplay
-          value={hint}
-          inputtitle="refer to hints"
-          height="py-1"
-          variant="gray"
-          textSize="text-xs"
+        {/*display selected emojis*/}
+        <DisplaySelectedEmojis
+          selectedEmojis={selectedEmojis}
+          handleRemoveEmoji={handleRemoveEmoji}
+          maxEmojis={maxEmojis}
         />
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-          <p className="text-white/70 text-sm mb-2">Selected Emojis ({selectedEmojis.length}/7)</p>
-          <div className="grid grid-cols-7 gap-2">
-            {Array.from({ length: 7 }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => selectedEmojis[index] && handleRemoveEmoji(index)}
-                className="aspect-square bg-white/20 rounded-lg flex items-center justify-center text-2xl hover:bg-white/30 transition-colors"
-              >
-                {selectedEmojis[index] || ""}
-              </button>
-            ))}
-          </div>
-        </div>
-
+        {/*submit button*/}
         <div className="mt-auto">
-          <GameButton variant="primary" onClick={handleSubmit}>
-            Submit
+          <GameButton variant="primary" onClick={handleSubmit} height="py-2">
+            Submit 
           </GameButton>
         </div>
       </div>
