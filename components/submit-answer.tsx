@@ -6,6 +6,7 @@ import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import {PageHeader} from "./page-header"
 import { useRouter } from "next/navigation"
 import { TextInput } from "./text-input"
+import { TextDisplay } from "./text-display"
 import { api } from "@/lib/api"
 
 export default function SubmitAnswer({ roomCode }: { roomCode: string }) {
@@ -43,6 +44,15 @@ export default function SubmitAnswer({ roomCode }: { roomCode: string }) {
             title="Submit Answer" 
             subtitle="Enter an answer" 
         />
+        <div className="w-full flex justify-start">
+          <TextDisplay
+            value={"Leader"}
+            height="py-0.5"
+            variant="primary"
+            textSize="text-xs"
+          />
+        </div>
+        
         <div className="flex flex-col items-center justify-center flex-grow">
           <TextInput
               value={answer}
