@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { GameButton } from "./game-button"
 import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import { PageHeader } from "./page-header"
@@ -23,9 +23,12 @@ export function CreateTopic({roomCode}:  { roomCode: string }) {
   const EMOJI_REGEX = /^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$/u;
 
   // temporary values
-  setTheme("Theme")
-  setIsLoading(false)
-  setHint("Hint: Choose emojis that represent the topic well.")
+  useEffect(() => {
+    setTheme("Theme")
+    setIsLoading(false)
+    setHint("Hint: Choose emojis that represent the topic well.")
+  }, [])
+  
   const maxEmojis = 7
   
   const handleEmojiInputChange = (value: string) => {

@@ -20,9 +20,11 @@ export default function CreateRoom({ participants : initialParticipants = [] }: 
   const router = useRouter()
 
   // Temporary: Mock room code and participants data
-  setRoomCode("ABC123")
-  setParticipants(["Alice", "Bob", "Charlie", "David", "Eve"])
-  setIsLoading(false)
+  useEffect(() => {
+    setRoomCode("ABC123")
+    setParticipants(["Alice", "Bob", "Charlie", "David", "Eve"])
+    setIsLoading(false)
+  }, [])
 
   const handleStartGame = async () => {
     if (!roomCode || participants.length<3 || participants.length>7) return

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import { PageHeader } from "./page-header"
 import { TextInput } from "./text-input"
@@ -15,9 +15,11 @@ export function WaitingDiscussionTime({roomCode}:  { roomCode: string }) {
     const [isLoading, setIsLoading] = useState(true)
 
     // temporary values
-    setTheme("Theme")
-    setTopic("Topic")
-    setIsLoading(false)
+    useEffect(() => {
+        setTheme("Theme")
+        setTopic("Topic")
+        setIsLoading(false)
+    }, [])
     const selectedEmojis: string[] = []
     const maxEmojis = 7
 

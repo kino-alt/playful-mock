@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import { PageHeader } from "./page-header"
 import { TextDisplay } from "./text-display"
@@ -14,8 +14,10 @@ export function DiscussionTime({roomCode}:  { roomCode: string }) {
   const [emoji, setEmoji] = useState("")
 
   // temporary values
-  setEmoji("👑")
-  setIsLoading(false)
+  useEffect(() => { 
+    setEmoji("👑")
+    setIsLoading(false)
+  }, [])
 
   return (
     <EmojiBackgroundLayout>

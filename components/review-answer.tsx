@@ -16,10 +16,12 @@ export function ReviewAnswer({roomCode}:  { roomCode: string }) {
     const [isLoading, setIsLoading] = useState(true)
 
     // temporary values
-    setTheme("Theme")
-    setTopic("Topic")
-    setAnswer("Sample Answer")
-    setIsLoading(false)
+    useEffect(() => {
+        setTheme("Theme")
+        setTopic("Topic")
+        setAnswer("Sample Answer")
+        setIsLoading(false)
+    }, [])
 
     //temporary submit handler
     const handleSubmit = async () => {

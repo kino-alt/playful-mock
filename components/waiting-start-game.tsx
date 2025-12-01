@@ -13,7 +13,9 @@ export default function WaitingSartGame({roomCode }: { roomCode: string }) {
    const router = useRouter()
 
    // Temporary: Mock participants data
-   setParticipants(["Alice", "Bob", "Charlie", "David", "Eve"]) 
+    useEffect(() => {
+      setParticipants(["Alice", "Bob", "Charlie", "David", "Eve"]) 
+    }, [])
 
   return (
     <EmojiBackgroundLayout>
