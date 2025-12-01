@@ -1,11 +1,12 @@
 interface PageHeaderProps {
   title: string
   subtitle:string
+  marginBottom?: string
 }
 
-export function PageHeader({title,subtitle}: PageHeaderProps){
+export function PageHeader({title,subtitle,marginBottom ="mb-6"}: PageHeaderProps){
   return(
-    <div className={"text-center mb-6"}>
+    <div className={"text-center "+ marginBottom}>
       <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-500 to-amber-500 bg-clip-text text-transparent mb-1">
         {title}
       </h1>
