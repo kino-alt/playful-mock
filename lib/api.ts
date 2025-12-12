@@ -88,31 +88,32 @@ export const api = {
 
   /** -------------------------------
    *  6. WebSocket connect
+   *  ws://.../api/rooms/{room_id}/ws
    *  ------------------------------- */
-  connectWebSocket: (roomCode: string, onMessage: (data: any) => void) => {
-    const ws = new WebSocket(`${WS_BASE_URL}/api/rooms/${roomCode}/ws`)
+  connectWebSocket: (roomId: string, onMessage: (data: any) => void) => {
+    const ws = new WebSocket(`${WS_BASE_URL}/api/rooms/${roomId}/ws`);
 
     ws.onopen = () => {
-      console.log("[v0] WebSocket connected to room:", roomCode)
-    }
+      console.log("[WS] Connected:", roomId);
+    };
 
     ws.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data)
-        onMessage(data)
-      } catch (error) {
-        console.error("[v0] Failed to parse WebSocket message:", error)
+        const data = JSON.parse(event.data);
+        onMessage(data);
+      } catch (err) {
+        console.error("[WS] Invalid message:", err);
       }
-    }
+    };
 
-    ws.onerror = (error) => {
-      console.error("[v0] WebSocket error:", error)
-    }
+    ws.onerror = (err) => {
+      console.error("[WS] Error:", err);
+    };
 
     ws.onclose = () => {
-      console.log("[v0] WebSocket disconnected")
-    }
+      console.log("[WS] Disconnected");
+    };
 
-    return ws
+    return ws;
   },
 };
