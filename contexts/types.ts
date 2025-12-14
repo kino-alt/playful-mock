@@ -22,7 +22,9 @@ export interface RoomState {
     roomCode?: string | null;    
     myUserId: string | null ;      
     isLeader: boolean;         
-    topic: string | null;       
+    topic: string | null;
+    theme: string | null;   //FIX: Add
+    hint: string | null;    //FIX: Add
     selectedEmojis: string[];
     participantsList: Participant[]
     roomState: GameState;
@@ -34,10 +36,8 @@ export interface RoomState {
 
 //room context type
 export interface RoomContextType extends RoomState {
-    createRoom: () => Promise<void>;
+  createRoom: () => Promise<void>;
   joinRoom: (roomCode: string, userName: string) => Promise<void>;
   submitTopic: (topic: string, emoji: string[]) => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
-  startGame: () => Promise<void>;
-
 }

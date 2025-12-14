@@ -70,6 +70,6 @@ export const useWsHandler = (setState: React.Dispatch<React.SetStateAction<RoomS
             default:
                 console.warn(`[v0] Unknown WS message type: ${type}`);
         }
-    }, []);
+    }, [setState, myUserId]);
     return handleWebSocketMessage;
 };
