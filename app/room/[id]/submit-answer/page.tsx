@@ -1,4 +1,4 @@
-import SubmitAnswer from "@/components/submit-answer"
+import SubmitAnswer from "@/src/components/submit-answer"
 import { RoomProvider } from '@/contexts/room-context';
 
 export default async function SubmitAnswerPage({

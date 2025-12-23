@@ -1,4 +1,4 @@
-import {ReviewAnswer} from "@/components/review-answer"
+import {ReviewAnswer} from "@/src/components/review-answer"
 import { RoomProvider } from '@/contexts/room-context';
 
 export default async function ReviewAnswerPage({

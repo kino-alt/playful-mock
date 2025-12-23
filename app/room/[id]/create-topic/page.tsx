@@ -1,4 +1,4 @@
-import { CreateTopic } from "@/components/create-topic"
+import { CreateTopic } from "@/src/components/create-topic"
 import { RoomProvider } from '@/contexts/room-context';
 
 export default async function CreateTopicPage({

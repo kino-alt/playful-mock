@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import CreateRoom from 
-"@/components/create-room"
+"@/src/components/create-room"
 import { RoomProvider } from '@/contexts/room-context';
 
 export const metadata: Metadata = {

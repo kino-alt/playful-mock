@@ -1,4 +1,4 @@
-import {WaitingDiscussionTime} from "@/components/wating-discussion-time"
+import {WaitingDiscussionTime} from "@/src/components/wating-discussion-time"
 import { RoomProvider } from '@/contexts/room-context';
 
 export default async function WaitingDiscussionTimePage({

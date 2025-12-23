@@ -1,4 +1,4 @@
-import WaitingStartGame from "@/components/waiting-start-game"
+import WaitingStartGame from "@/src/components/waiting-start-game"
 import { RoomProvider } from '@/contexts/room-context';
 
 export default async function WaitingStartGamePage({

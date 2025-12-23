@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useEffect,useCallback  } fr
 import { api } from "@/lib/api";
 import { RoomContextType, RoomState, GameState } from "./types";
 import { useWsHandler } from "./useWSHandler";
-import { ParticipantList } from "@/components/participant-list";
+import { ParticipantList } from "@/src/components/participant-list";
 
 //FIX: Separate RoomState
 const initialRoomState: RoomState = {

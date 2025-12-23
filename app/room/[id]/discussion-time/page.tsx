@@ -1,4 +1,4 @@
-import {DiscussionTime} from "@/components/discussion-time"
+import {DiscussionTime} from "@/src/components/discussion-time"
 import { RoomProvider } from '@/contexts/room-context';
 
 export default async function DiscussionTimePage({
