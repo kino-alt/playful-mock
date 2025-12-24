@@ -52,12 +52,13 @@ export const useWsHandler = (setState: React.Dispatch<React.SetStateAction<RoomS
             case 'PARTICIPANT_UPDATE':
                 setState(prev => {
                     const newParticipants = payload.participants as Participant[];
+                    console.log("My User ID:", prev.myUserId);
                     const me = newParticipants.find(p => p.user_id === prev.myUserId);
                     
                     return { 
                         ...prev, 
                         participantsList: newParticipants,
-                        isLeader: me ? me.is_Leader : prev.isLeader, 
+                        isLeader: me ? (String(me.is_Leader) === "true") : prev.isLeader, 
                         globalError: null
                     }
                 });

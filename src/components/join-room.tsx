@@ -19,7 +19,9 @@ export default function JoinRoom() {
     joinRoom,
   } = useRoomData();
 
-  const handleJoinRoom = async () => {
+  const handleJoinRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (!roomCode || !userName) {
       return
     }
@@ -42,40 +44,42 @@ export default function JoinRoom() {
 
   return (
     <EmojiBackgroundLayout>
-      <div className="w-full max-w-xs flex flex-col h-full">
-        {/* Header */}
-        <PageHeader 
-            title="Join Room" 
-            subtitle="Enter a room code" 
-        />
-        <div className="flex flex-col items-center justify-center flex-grow">
-          <TextInput
-              value={roomCode}
-              onChange={setRoomCode}
-              placeholder="Enter code"
-              maxLength={6}
-              variant="primary"
-              textSize="text-2xl"
+      <form onSubmit={handleJoinRoom} className="w-full max-w-xs flex flex-col h-full">
+        <div className="w-full max-w-xs flex flex-col h-full">
+          {/* Header */}
+          <PageHeader 
+              title="Join Room" 
+              subtitle="Enter a room code" 
           />
-          <TextInput
-              value={userName}
-              onChange={setUserName}
-              placeholder="Enter user name"
-              height="py-1"
-              variant="gray"
-              mode="edit"
-              uppercase={false}
-              textSize="text-base"
-          />
-        </div>
+          <div className="flex flex-col items-center justify-center flex-grow">
+            <TextInput
+                value={roomCode}
+                onChange={setRoomCode}
+                placeholder="Enter code"
+                maxLength={6}
+                variant="primary"
+                textSize="text-2xl"
+            />
+            <TextInput
+                value={userName}
+                onChange={setUserName}
+                placeholder="Enter user name"
+                height="py-1"
+                variant="gray"
+                mode="edit"
+                uppercase={false}
+                textSize="text-base"
+            />
+          </div>
 
-        {/* Join Button */}
-        <div className="mt-auto">
-          <GameButton variant="secondary" onClick={handleJoinRoom} disabled={!roomCode || !userName}>
-            {"Join Room"}
-          </GameButton>
+          {/* Join Button */}
+          <div className="mt-auto">
+            <GameButton variant="secondary"  disabled={!roomCode || !userName} type="submit">
+              {"Join Room"}
+            </GameButton>
+          </div>
         </div>
-      </div>
+      </form>
     </EmojiBackgroundLayout>
   )
 }

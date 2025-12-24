@@ -30,7 +30,7 @@ export const handlers = [
     return HttpResponse.json({
       "room_id": "abc",
       "user_id": "bb",
-      "is_leader": false,
+      "is_leader": true,
     }, { status: 200 });
   }),
 
@@ -58,7 +58,6 @@ http.post('/api/rooms/:room_id/topic', async ({ params }) => {
     allClients.add(client);
     console.log('[MSW] WS接続確立:', client.id, 'Total:', allClients.size);
 
-    // 🔴 全員に送信する関数を定義
     const broadcast = (message: object) => {
       const msgString = JSON.stringify(message);
       allClients.forEach((c) => {
@@ -66,17 +65,20 @@ http.post('/api/rooms/:room_id/topic', async ({ params }) => {
       });
     };
 
-    // 参加者リストの初期通知 (接続した瞬間に全員を更新)
-    broadcast({
-      type: 'PARTICIPANT_UPDATE',
-      payload: {
-        participants: [
-          { user_id: "aa", user_name: "ホスト", role: "host", is_Leader: "false" },
-          { user_id: "dummy1", user_name: "たいよう", role: "player", is_Leader: "true" },
-          { user_id: "dummy2", user_name: "しょう", role: "player", is_Leader: "false" },
-        ]
-      }
-    });
+    // 🔴 接続から少し遅らせて送信（クライアントの準備時間を確保）
+    setTimeout(() => {
+      console.log("[MSW] Sending initial participant list...");
+      broadcast({
+        type: 'PARTICIPANT_UPDATE',
+        payload: {
+          participants: [
+            { user_id: "aa", user_name: "ホスト", role: "host", is_Leader: false }, 
+            { user_id: "dummy1", user_name: "たいよう", role: "player", is_Leader: false },
+            { user_id: "dummy2", user_name: "しょう", role: "player", is_Leader: false },
+          ]
+        }
+      });
+    }, 500);
 
     client.addEventListener('message', (event) => {
       const data = JSON.parse(event.data as string);

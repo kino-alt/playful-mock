@@ -88,8 +88,8 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
       ...prev,
       roomId: data.room_id,
       roomCode,
-      myUserId: data.user_is, 
-      isLeader: data.is_leader === "true",
+      myUserId: data.user_id, 
+      isLeader: String(data.is_leader) === "true" || data.is_leader === true,
     }));
     return data.room_id;
   },[]);
