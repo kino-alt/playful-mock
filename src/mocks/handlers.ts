@@ -85,6 +85,16 @@ http.post('/api/rooms/:room_id/topic', async ({ params }) => {
         return;
       }
 
+      if (data.type === 'CHECKING') {
+        client.send(JSON.stringify({
+          type: 'STATE_UPDATE',
+          payload: {
+            nextState: "finished", 
+          }
+        }));
+        return;
+      }
+
       // ホストがトピックを決定した時
       if (data.type === 'SUBMIT_TOPIC') {
         // 🔴 1. 状態更新をブロードキャスト (プロパティ名を合わせる)

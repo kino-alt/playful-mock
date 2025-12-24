@@ -4,7 +4,7 @@ import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import { PageHeader } from "./page-header"
 import { WaitingAnimation } from "./waiting-animation"
 import { useEffect } from "react"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 //FIX: Add
 import { useRoomData } from '@/contexts/room-context';
 import { GameState } from "@/contexts/types";

@@ -5,7 +5,6 @@ import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import { PageHeader } from "./page-header"
 import { TextDisplay } from "./text-display"
 import { CountTimer } from "./count-timer"
-import FukidashiImage from '../images/speach_bubble.png'
 import { Modal } from "./modal"
 import { useRouter } from "next/navigation"
 //FIX: Add
@@ -24,7 +23,7 @@ export function DiscussionTime() {
     timer, 
     globalError,
   } = useRoomData();
-
+  
   // push next page
   useEffect(() => { 
     if (roomState === GameState.ANSWERING && roomId) {
@@ -48,7 +47,9 @@ export function DiscussionTime() {
         isOpen={showHintOverlay}
         onClose={handleToggleHintOverlay}
         title="Discussion Hint"
-        content="Discuss the meaning and relevance of the emoji to the topic. Share your thoughts and listen to others!"
+        content={`1. 自分の絵文字を順番に言葉で説明していく
+2. テーマがなにかを考える
+3. お題がなにか導き出す`}
       />
 
       <div className="w-full max-w-xs flex flex-col h-full">
@@ -87,7 +88,7 @@ export function DiscussionTime() {
             <div className="relative w-full max-w-[280px] h-[250px] flex items-center justify-center">
                 
                 <img 
-                    src={FukidashiImage.src} 
+                    src="/images/speech_bubble.png"
                     alt="Speech Bubble"
                     className="absolute inset-0 w-full h-full object-contain"
                 />

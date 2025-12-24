@@ -25,13 +25,19 @@ export default function JoinRoom() {
     }
 
     try {
-      console.log("[v0] Starting game for room:", roomCode)
-      await joinRoom(roomCode,userName);
-      router.push(`/room/${roomId}/waiting-start-game`);      
-    } catch (error) {
-      console.error("Error starting game:", error)
-      alert("Failed to start game")
+    console.log("[v0] Joining room with code:", roomCode)
+    
+    const newRoomId = await joinRoom(roomCode, userName);
+    
+    if (newRoomId) {
+      router.push(`/room/${newRoomId}/discussion-time`);
+    } else {
+      console.error("Room ID was not returned from joinRoom");
     }
+  } catch (error) {
+    console.error("Error joining game:", error)
+    alert("Failed to join room. Please check the code.")
+  }
   }
 
   return (

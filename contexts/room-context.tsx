@@ -31,7 +31,7 @@ const initialContext: RoomContextType = {
   isHost: false,
   maxEmojis: 0,
   createRoom: async () => {},
-  joinRoom: async () => {},
+  joinRoom: async () => "",
   submitTopic: async () => {},
   submitAnswer: async () => {},
   startGame: async () => {},
@@ -91,6 +91,7 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
       myUserId: data.user_is, 
       isLeader: data.is_leader === "true",
     }));
+    return data.room_id;
   },[]);
 
   // 1.2 テーマ、絵文字の設定 (POST /api/rooms/${room_id}/topic)
@@ -145,7 +146,7 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
       await api.finishRoom(state.roomId); 
       const ws = (window as any).gameWs; 
       if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'FINISHED' }));
+        ws.send(JSON.stringify({ type: 'CHECKING' }));
       }
     } catch (error) {
       console.error("Failed to finish room:", error);

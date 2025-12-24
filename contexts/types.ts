@@ -40,7 +40,7 @@ export interface RoomContextType extends RoomState {
   isHost: boolean;
   maxEmojis: number;
   createRoom: () => Promise<void>;
-  joinRoom: (roomCode: string, userName: string) => Promise<void>;
+  joinRoom: (roomCode: string, userName: string) => Promise<string | undefined>;
   submitTopic: (topic: string, emoji: string[]) => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
   startGame: () => Promise<void>;
