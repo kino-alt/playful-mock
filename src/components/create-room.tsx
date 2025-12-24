@@ -33,10 +33,10 @@ export default function CreateRoom() {
   {/* push next page*/}
   useEffect(() => {
     console.log("Current Room State:", roomState); // デバッグ用
-  if (roomState === GameState.SETTING_TOPIC && roomCode) {
-    console.log("Navigating to create-topic...");
-    router.push(`/room/${roomId}/create-topic`);
-  }
+    if (roomState === GameState.SETTING_TOPIC && roomCode) {
+      console.log("Navigating to create-topic...");
+      router.push(`/room/${roomId}/create-topic`);
+    }
   }, [roomState, roomId, router]);
 
   {/*Handle start game action*/}

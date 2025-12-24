@@ -89,7 +89,7 @@ http.post('/api/rooms/:room_id/start', async ({ params }) => {
         client.send(JSON.stringify({
           type: 'STATE_UPDATE',
           payload: {
-            nextState: "discussing", // Context内のGameStateの定義に合わせてください
+            nextState: "discussing", 
             data: {
               assignments: [
                 { user_id: "aa", emoji: "" },

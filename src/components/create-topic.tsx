@@ -24,6 +24,7 @@ export function CreateTopic() {
   const router = useRouter()
   const { 
     roomId,
+    roomCode,
     theme, 
     hint,  
     participantsList,
@@ -37,11 +38,10 @@ export function CreateTopic() {
   
   // push next page
   useEffect(() => {
-    if (roomState === GameState.DISCUSSING && roomId) {
-         router.push(`/room/${roomId}/waiting-doscussion-time`);
-    }
-    if (roomState !== GameState.SETTING_TOPIC && roomState !== GameState.DISCUSSING) {
-         router.push(`/room/${roomId}`); 
+    console.log("Current Room State:", roomState); // デバッグ用
+    if (roomState === GameState.DISCUSSING && roomCode) {
+      console.log("Navigating to discussion-time...");
+      router.push(`/room/${roomId}/waiting-discussion-time`);
     }
   }, [roomState, roomId, router])
 
