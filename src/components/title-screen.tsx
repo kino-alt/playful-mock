@@ -17,12 +17,12 @@ export default function TitleScreen() {
   const handleCreateRoom = async() => {
      try {
       console.log("[v0] Starting game for room:")
-      await createRoom();      
+      await createRoom();    
+      router.push("/create-room")  
     } catch (error) {
       console.error("Error starting game:", error)
       alert("Failed to start game")
     }
-    router.push("/create-room")
   }
 
   const handleJoinRoom = () => {
