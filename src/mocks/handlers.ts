@@ -12,8 +12,8 @@ export const handlers = [
   http.post('*/api/rooms', async () => {
     await delay(500);
     return HttpResponse.json({
-      "room_id": "3f316353-f3ab-9bc1-9f68-3bc999ef7486",
-      "user_id": "ff6a4c2c-b396-a84f-9c3c-6513baf12611",
+      "room_id": "abc",
+      "user_id": "aa",
       "room_code": "AAAAAA",
       "theme": "人物",
       "hint": "出身地、性別、やったこと",
@@ -48,8 +48,8 @@ export const handlers = [
     }
 
     return HttpResponse.json({
-      "room_id": "3f316353-f3ab-9bc1-9f68-3bc999ef7486",
-      "user_id": "2bc78967-4244-dcf6-4929-bc5ed70e4d09",
+      "room_id": "abc",
+      "user_id": "bb",
       "is_leader": true,
     }, { status: 200 });
   }),
@@ -67,8 +67,8 @@ export const handlers = [
         payload: {
           participants: [
             {
-              user_id: "2bc78967-4244-dcf6-4929-bc5ed70e4d09",
-              user_name: "あああ",
+              user_id: "bb",
+              user_name: "あかね",
               role: "player",
               is_Leader: "true"
             }
@@ -107,7 +107,7 @@ export const handlers = [
               nextState: "discussing",
               data: {
                 assignments: [
-                  { user_id: "2bc78967-4244-dcf6-4929-bc5ed70e4d09", emoji: "🍎" }
+                  { user_id: "bb", emoji: "🍎" }
                 ]
               }
             }

@@ -9,7 +9,9 @@ export const metadata: Metadata = {
 }
 
 export default function CreateRoomPage() {
-  <RoomProvider>
-    return <CreateRoom />
-  </RoomProvider>
+  return (
+    <RoomProvider>
+      <CreateRoom />
+    </RoomProvider>
+  )
 }

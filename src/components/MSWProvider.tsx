@@ -7,18 +7,21 @@ export const MSWProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const init = async () => {
-      // localhost かつ ブラウザ環境のみ
-      if (typeof window !== "undefined" && 
-          (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
-        try {
-          const { worker } = await import("@/src/mocks/browser");
-          await worker.start({
-            // 登録されていないリクエスト（Next.js内部通信など）は無視する
-            onUnhandledRequest: "bypass", 
-          });
-          console.log("[MSW] Mocking enabled.");
-        } catch (error) {
-          console.error("[MSW] Failed to start:", error);
+      if (typeof window !== "undefined") {
+        // localhost以外（Vercelなど）では動かさないガード
+        const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        
+        if (isLocal && process.env.NODE_ENV === "development") {
+          try {
+            const { worker } = await import("@/src/mocks/browser");
+            // すでに起動している場合は何もしない
+            await worker.start({
+              onUnhandledRequest: "bypass",
+            });
+            console.log("[MSW] Mocking enabled.");
+          } catch (error) {
+            console.error("[MSW] Failed to start:", error);
+          }
         }
       }
       setMswReady(true);
@@ -26,8 +29,16 @@ export const MSWProvider = ({ children }: { children: React.ReactNode }) => {
     init();
   }, []);
 
-  // 完全に準備ができるまで表示を待つ（真っ白になる場合はここをチェック）
-  if (!mswReady) return null;
+  // 🔴 ここがポイント：
+  // MSWが「準備完了」と言うまで children をマウントしない。
+  // これにより、すべてのAPI通信が必ずMSWを通るようになります。
+  if (!mswReady) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        Loading Mock Environment...
+      </div>
+    );
+  }
 
   return <>{children}</>;
 };
