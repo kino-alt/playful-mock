@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import CreateRoom from 
 "@/src/components/create-room"
-import { RoomProvider } from '@/contexts/room-context';
 
 export const metadata: Metadata = {
   title: "Create Room - Emoji Discussion Game",
@@ -10,8 +9,6 @@ export const metadata: Metadata = {
 
 export default function CreateRoomPage() {
   return (
-    <RoomProvider>
       <CreateRoom />
-    </RoomProvider>
   )
 }

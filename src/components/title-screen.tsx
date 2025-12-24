@@ -18,7 +18,8 @@ export default function TitleScreen() {
      try {
       console.log("[v0] Starting game for room:")
       await createRoom();    
-      router.push("/create-room")  
+      console.log("[Title] Success, navigating to create-room");
+      router.push("/create-room");
     } catch (error) {
       console.error("Error starting game:", error)
       alert("Failed to start game")

@@ -40,7 +40,11 @@ export const handlers = [
       client.send(JSON.stringify({
         type: 'PARTICIPANT_UPDATE',
         payload: {
-          participants: [{ user_id: "bb", user_name: "あかね", role: "player", is_Leader: "true" }]
+          participants: [
+            { user_id: "bb", user_name: "あかね", role: "player", is_Leader: "true" },
+            { user_id: "cc", user_name: "たいよう", role: "player", is_Leader: "false" },
+            { user_id: "dd", user_name: "しょう", role: "player", is_Leader: "false" }
+          ]
         }
       }));
     }, 1000);

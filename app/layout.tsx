@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google' // フォントをインポート
 import './globals.css'
 import { MSWProvider } from '@/src/components/MSWProvider'
+import { RoomProvider } from '@/contexts/room-context';
 
 // フォントの設定
 const geistSans = Geist({
@@ -41,7 +42,9 @@ export default function RootLayout({
       */}
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <MSWProvider>
-          {children}
+          <RoomProvider>
+            {children}
+          </RoomProvider>
         </MSWProvider>
       </body>
     </html>

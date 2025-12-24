@@ -63,15 +63,21 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
   const createRoom = useCallback(async () => {
     // APIレスポンス: { room_id, user_id, room_code, theme, hint }
     const data = await api.createRoom();
-    setState((prev) => ({
-      ...prev,
-      roomId: data.room_id,
-      roomCode: data.room_code,
-      myUserId: data.user_id,
-      isLeader:false,
-      theme: data.theme, 
-      hint: data.hint,
-    }));
+    console.log("[Context] API Response:", data);
+    try{
+      setState((prev) => ({
+        ...prev,
+        roomId: data.room_id,
+        roomCode: data.room_code,
+        myUserId: data.user_id,
+        isLeader:false,
+        theme: data.theme, 
+        hint: data.hint,
+      }));
+    }catch (err) {
+    console.error("[Context] createRoom Error:", err);
+    throw err; // TitleScreen 側で catch できるように投げる
+    }
   }, []);
 
   // 1.4 ルーム参加 (POST /api/user)
