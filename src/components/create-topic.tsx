@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, use, useRef } from "react"
 import { GameButton } from "./game-button"
 import { EmojiBackgroundLayout } from "./emoji-background-layout"
 import { PageHeader } from "./page-header"
@@ -12,6 +12,7 @@ import { Modal } from "./modal"
 //FIX: Add
 import { useRoomData } from '@/contexts/room-context';
 import { GameState } from "@/contexts/types";
+import EmojiPicker, { EmojiClickData, Theme } from 'emoji-picker-react';
 
 
 export function CreateTopic() {
@@ -19,6 +20,7 @@ export function CreateTopic() {
   const [emojiInput, setEmojiInput] = useState("")
   const [localSelectedEmojis, setLocalSelectedEmojis] = useState<string[]>([])
   const [showHintOverlay, setShowHintOverlay] = useState(false)
+  const [showPicker, setShowPicker] = useState(false)
   const router = useRouter()
   const { 
     roomId,
@@ -30,7 +32,8 @@ export function CreateTopic() {
     submitTopic,
     globalError,
   } = useRoomData();
-  const EMOJI_REGEX = /^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])$/u;
+  
+  const pickerRef = useRef<HTMLDivElement>(null);
   
   // push next page
   useEffect(() => {
@@ -42,31 +45,17 @@ export function CreateTopic() {
     }
   }, [roomState, roomId, router])
 
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    setEmojiInput(emojiData.emoji);
+    setShowPicker(false); // 選択したら閉じる
+  };
+
   {/* Toggle hint overlay visibility */}
   const handleToggleHintOverlay = () => {
     setShowHintOverlay(prev => !prev)
   }
-  
-  {/* (要修正）Handle emoji input change with validation */}
-  const handleEmojiInputChange = (value: string) => {
-    if (value === "" || EMOJI_REGEX.test(value)) {
-      setEmojiInput(value);
-    }
-
-    const newChar = value.slice(-1);
-    if (newChar === "" || EMOJI_REGEX.test(newChar)) {
-      setEmojiInput(newChar);
-    }
-
-    if (value.length <= 1) {
-      if (value === "" || EMOJI_REGEX.test(value)) {
-        setEmojiInput(value);
-      }
-    }
-  };
     
-  {/* Add emoji to selected list */}
-  const handleAddEmoji = () => {
+ const handleAddEmoji = () => {
     if (emojiInput && localSelectedEmojis.length < maxEmojis ) {
       setLocalSelectedEmojis([...localSelectedEmojis, emojiInput]);
       setEmojiInput(""); 
@@ -75,7 +64,6 @@ export function CreateTopic() {
     }
   }
 
-  {/* Remove emoji from selected list */}
   const handleRemoveEmoji = (index: number) => {
     setLocalSelectedEmojis(localSelectedEmojis.filter((_, i) => i !== index));
   }
@@ -147,20 +135,38 @@ export function CreateTopic() {
                 !
             </button>
 
-            {/*select emoji input*/}
-            <TextInput
-              value={emojiInput}
-              onChange={handleEmojiInputChange}
-              inputtitle="" 
-              placeholder=""
-              maxLength={1}
-              height="py-8"
-              variant="gray"
-              mode="edit"
-              textSize="text-xl"
-              marginBottom="mb-2"
-              isEmojiInput={true}
-            />
+            <div onClick={() => setShowPicker(!showPicker)} className="cursor-pointer">
+              <TextInput
+                value={emojiInput}
+                onChange={() => {}} // readOnlyなので何もしない
+                inputtitle="" 
+                placeholder=""
+                height="py-8"
+                variant="gray"
+                mode="edit"
+                textSize="text-xl"
+                marginBottom="mb-2"
+                isEmojiInput={true}
+                // @ts-ignore (TextInputコンポーネントがPropsを受け取れる場合)
+                readOnly={true} 
+              />
+            </div>
+
+            {/* 5. 絵文字ピッカーのオーバーレイ表示 */}
+            {showPicker && (
+              <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 shadow-2xl">
+                <EmojiPicker 
+                  onEmojiClick={onEmojiClick}
+                  theme={Theme.LIGHT}
+                  autoFocusSearch={false}
+                  width={280}
+                  height={350}
+                  // 検索やカテゴリーなどの表示を絞る設定（任意）
+                  searchDisabled={false}
+                  skinTonesDisabled={true}
+                />
+              </div>
+            )}
             <p className="text-xs text-gray-500 font-semibold uppercase text-center mt-2">Select Emoji</p>
           </div>
           

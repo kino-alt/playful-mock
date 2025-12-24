@@ -56,7 +56,7 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
   const amIHost = state.participantsList.some(
     p => p.user_id === state.myUserId && p.role === 'host'
   );
-  const maxEmoji = ParticipantList.length -1
+  const maxEmoji = Math.max(0, state.participantsList.length - 1);
 
   // actions FIX:API設計に合わせる/useCallback関数使用-----------------------------
   // 1.1 Roomの作成 (POST /api/rooms)
@@ -123,7 +123,7 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
       await api.startGame(state.roomId); 
       const ws = (window as any).gameWs; 
       if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'START_GAME' }));
+        ws.send(JSON.stringify({ type: 'WAITING' }));
       }
     } catch (error) {
       console.error("Failed to start game:", error);

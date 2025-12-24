@@ -4,13 +4,11 @@ import { RoomProvider } from '@/contexts/room-context';
 export default async function ReviewAnswerPage({
 params,
 }: {
-  params: { id: string } 
+  params: Promise<{ id: string }> 
 }) {
-  const { id } = params
+  const { id } = await params
 
   return(
-    <RoomProvider initialRoomId={id}>
       <ReviewAnswer/>
-    </RoomProvider>
   )
 }

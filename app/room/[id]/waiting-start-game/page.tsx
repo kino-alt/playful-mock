@@ -1,16 +1,14 @@
 import WaitingStartGame from "@/src/components/waiting-start-game"
-import { RoomProvider } from '@/contexts/room-context';
 
 export default async function WaitingStartGamePage({
   params,
 }: {
-  params: { id: string } 
+  params: Promise<{ id: string }> 
 }) {
-  const { id } = params
+  // 🔴 paramsをawaitしてからidを取り出す
+  const { id } = await params
 
 return(
-  <RoomProvider initialRoomId={id}>
      <WaitingStartGame/>
-     </RoomProvider>
   )
 }
