@@ -29,7 +29,7 @@ export function WaitingDiscussionTime() {
     // push next page
     useEffect(() => { 
       console.log("Current Room State:", roomState); // デバッグ用
-      if (roomState === GameState.CHECKING && roomCode) {
+      if (roomState === GameState.ANSWERING && roomCode) {
         console.log("Navigating to discussion-time...");
         router.push(`/room/${roomId}/review-answer`);
       }

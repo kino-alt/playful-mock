@@ -112,6 +112,18 @@ http.post('/api/rooms/:room_id/topic', async ({ params }) => {
           }
           const min = Math.floor(seconds / 60).toString().padStart(2, '0');
           const sec = (seconds % 60).toString().padStart(2, '0');
+
+          if (seconds <= 0) {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            client.send(JSON.stringify({
+              type: 'STATE_UPDATE',
+              payload: {
+                nextState: "answering", 
+              }
+            }));
+            return;
+          }
           
           client.send(JSON.stringify({ 
               type: 'TIMER_TICK', 
