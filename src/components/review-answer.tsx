@@ -93,6 +93,7 @@ export function ReviewAnswer() {
                 selectedEmojis={selectedEmojis}
                 handleRemoveEmoji={() => {}}
                 maxEmojis={selectedEmojis.length}
+                roomState={roomState}
             /> 
 
             {/*submit button*/}
