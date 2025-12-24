@@ -38,6 +38,12 @@ http.post('/api/rooms/:room_id/start', async ({ params }) => {
   return HttpResponse.json({ status: "success" }, { status: 200 });
 }),
 
+http.post('/api/rooms/:room_id/topic', async ({ params }) => {
+    console.log(`[MSW] Intercepted submitTopic for room: ${params.room_id}`);
+    await delay(300);
+    return HttpResponse.json({ status: "success" }, { status: 200 });
+  }),
+
   // --- 2. WebSocketのモック (gameWs.addEventListener をそのまま入れる) ---
   gameWs.addEventListener('connection', ({ client }) => {
     console.log('[MSW] WS接続確立:', client.id);

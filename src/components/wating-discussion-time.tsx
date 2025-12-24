@@ -7,7 +7,7 @@ import { TextInput } from "./text-input"
 import { TextDisplay } from "./text-display"
 import { CountTimer } from "./count-timer"
 import { DisplaySelectedEmojis } from "./display-selected-emojis"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 //FIX: Add
 import { useRoomData } from '@/contexts/room-context';
 import { GameState } from "@/contexts/types";
@@ -15,22 +15,25 @@ import { GameState } from "@/contexts/types";
 export function WaitingDiscussionTime() {
     const router = useRouter()
       const { 
-            roomId,
-            theme,
-            topic,
-            selectedEmojis,
-            maxEmojis,
-            timer,
-            roomState,
-            globalError,
-        } = useRoomData();
-    
-      // push next page
-        useEffect(() => { 
-          if (roomState === GameState.CHECKING && roomId) {
-            router.push(`/room/${roomId}/review-answer`);
-          }
-        }, [roomState, roomId, router])
+        roomId,
+        roomCode,
+        theme,
+        topic,
+        selectedEmojis,
+        maxEmojis,
+        timer,
+        roomState,
+        globalError,
+    } = useRoomData();
+
+    // push next page
+    useEffect(() => { 
+      console.log("Current Room State:", roomState); // デバッグ用
+      if (roomState === GameState.CHECKING && roomCode) {
+        console.log("Navigating to discussion-time...");
+        router.push(`/room/${roomId}/review-answer`);
+      }
+    }, [roomState, roomId, router])
 
     return (
         <EmojiBackgroundLayout>
@@ -40,7 +43,7 @@ export function WaitingDiscussionTime() {
 
             {/*display theme*/}
             <TextDisplay
-                value={theme || ""}
+                value={theme || "N/A"}
                 inputtitle=""
                 height="py-0.5"
                 variant="primary"
@@ -50,7 +53,7 @@ export function WaitingDiscussionTime() {
 
             {/*display topic*/}
             <TextInput
-                value={topic || ""}
+                value={topic || "N/A"}
                 onChange={()=>{}}
                 inputtitle=""
                 placeholder=""

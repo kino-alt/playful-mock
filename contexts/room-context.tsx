@@ -96,13 +96,20 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
   // 1.2 テーマ、絵文字の設定 (POST /api/rooms/${room_id}/topic)
   const submitTopic = useCallback(async (topic: string, emoji: string[]) => {
     if (!state.roomId || !amIHost) return;
-    await api.submitTopic(state.roomId, topic, emoji);
-    setState(prev => ({
-        ...prev,
-        topic: topic,
-        selectedEmojis: emoji,
-    }));
-    //サーバーからの STATE_UPDATE を待つ
+    try {
+      await api.submitTopic(state.roomId, topic, emoji);
+      
+      const ws = (window as any).gameWs; 
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ 
+          type: 'SUBMIT_TOPIC',
+          payload: { topic, emojis: emoji } 
+        }));
+        console.log("[Context] WS Message Sent: SUBMIT_TOPIC");
+      }
+    } catch (error) {
+      console.error("Failed to submit topic:", error);
+    }
   }, [state.roomId,state.participantsList, state.myUserId]);
 
   // 1.3 回答の提出 (POST /api/rooms/${room_id}/answer)
