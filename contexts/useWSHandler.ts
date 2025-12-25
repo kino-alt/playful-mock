@@ -50,6 +50,7 @@ export const useWsHandler = (setState: React.Dispatch<React.SetStateAction<RoomS
 
             //participant list update handler
            case 'PARTICIPANT_UPDATE':
+            case 'PARTICIPANTS_UPDATE':
             // 🔴 ログを追加して構造を確認
             console.log("[WS RECEIVED] Data:", payload);
 

@@ -1,7 +1,9 @@
 import { http, HttpResponse, delay, ws } from 'msw'
 
-const API_BASE_URL = "http://localhost:8080";
-const WS_BASE_URL = "ws://localhost:8080";
+const API_BASE_URL = "";
+const WS_BASE_URL = typeof window !== 'undefined' 
+  ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
+  : "ws://localhost:3000";
 
 // 1. WebSocketリンクの作成
 const gameWs = ws.link(`${WS_BASE_URL}/api/rooms/:room_id/ws`);
@@ -42,6 +44,93 @@ const broadcastParticipants = () => {
   });
 };
 
+
+// Register WebSocket connection handler on the ws.link instance
+gameWs.addEventListener('connection', ({ client }) => {
+  allClients.add(client);
+  console.log("[MSW] New Connection. Total:", allClients.size);
+
+  // 🔴 誰かが入室（接続）したら、即座に最新のリストを全員（ホスト含む）に送る
+  setTimeout(() => {
+    broadcastParticipants();
+  }, 500);
+
+  client.addEventListener('message', (event) => {
+    // 🔴 受信自体ができているかログを出す
+    console.log("[MSW] Received message from client:", event.data);
+    
+    const data = JSON.parse(event.data as string);
+    if (data.type === 'FETCH_PARTICIPANTS') {
+      console.log("[MSW] Manual fetch requested");
+      broadcastParticipants();
+    }
+
+    if (data.type === 'WAITING') {
+      broadcast({
+        type: 'STATE_UPDATE',
+        payload: { nextState: "setting_topic" }
+      });
+      return;
+    }
+
+    if (data.type === 'CHECKING') {
+      broadcast({
+        type: 'STATE_UPDATE',
+        payload: { nextState: "finished" }
+      });
+      return;
+    }
+
+    if (data.type === 'ANSWERING') {
+      broadcast({
+        type: 'STATE_UPDATE',
+        payload: {
+          nextState: "checking",
+          data: { answer: data.payload.answer }
+        }
+      });
+      return;
+    }
+
+    if (data.type === 'SUBMIT_TOPIC') {
+      broadcast({
+        type: 'STATE_UPDATE',
+        payload: {
+          nextState: "discussing",
+          data: {
+            topic: data.payload.topic,
+            selected_emojis: data.payload.emojis,
+            assignments: [
+              { user_id: "aa", emoji: "🍎" },
+              { user_id: "bb", emoji: "🍎" },
+              { user_id: "dummy1", emoji: "👨" },
+              { user_id: "dummy2", emoji: "🏢" }
+            ]
+          }
+        }
+      });
+
+      if (timerInterval) clearInterval(timerInterval);
+      let seconds = 10; 
+      timerInterval = setInterval(() => {
+        seconds--;
+        if (seconds < 0) {
+          clearInterval(timerInterval!);
+          broadcast({ type: 'STATE_UPDATE', payload: { nextState: "answering" } });
+          return;
+        }
+        const min = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const sec = (seconds % 60).toString().padStart(2, '0');
+        broadcast({ type: 'TIMER_TICK', payload: { time: `${min}:${sec}` } });
+      }, 1000);
+    }
+  });
+
+  client.addEventListener('close', () => {
+    allClients.delete(client);
+    if (allClients.size === 0 && timerInterval) clearInterval(timerInterval);
+  });
+});
 
 export const handlers = [
   // --- 1. Room関連 (HTTP) ---

@@ -1,7 +1,9 @@
 // lib/api.ts
 
 const API_BASE_URL = ""; 
-const WS_BASE_URL = "ws://localhost:8080";
+const WS_BASE_URL = typeof window !== 'undefined' 
+  ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
+  : "";
 
 //FIX: API設計に合わせて、StartGame削除
 export const api = {
@@ -106,29 +108,29 @@ export const api = {
   connectWebSocket: (roomId: string, onMessage: (data: any) => void) => {
     if (!roomId) return { close: () => {} } as any;
 
-  const url = `${WS_BASE_URL}/api/rooms/${roomId}/ws`;
-  const ws = new WebSocket(url);
+    const url = `${WS_BASE_URL}/api/rooms/${roomId}/ws`;
+    const ws = new WebSocket(url);
 
-  // 🔴 修正：'message' イベントリスナーを確実に一番最初に登録する
-  ws.addEventListener('message', (event) => {
-    // どんなデータが来ても、まず生で出力する
-    console.log(">>> WS RAW DATA RECEIVED:", event.data);
-    try {
-      const data = JSON.parse(event.data);
-      if (onMessage) onMessage(data);
-    } catch (err) {
-      console.error("[WS] Parse Error:", err);
-    }
-  });
+    // 🔴 修正：addEventListener ではなく .onmessage プロパティを直接使う
+    // これが最も確実に MSW からのメッセージをキャッチできます
+    ws.onmessage = (event) => {
+      console.log(">>> WS RAW DATA RECEIVED:", event.data);
+      try {
+        const data = JSON.parse(event.data);
+        if (onMessage) onMessage(data);
+      } catch (err) {
+        console.error("[WS] Parse Error:", err);
+      }
+    };
 
-  ws.addEventListener('open', () => {
-    console.log("[WS] Connection Opened");
-    // 接続した瞬間に一度フェッチを投げる
-    ws.send(JSON.stringify({ type: 'FETCH_PARTICIPANTS' }));
-  });
+    ws.onopen = () => {
+      console.log("[WS] Connection Opened");
+      // 接続時にデータを要求する（これは正しいです）
+      ws.send(JSON.stringify({ type: 'FETCH_PARTICIPANTS' }));
+    };
 
-    ws.addEventListener('error', (err) => console.log("[WS] Error", err));
-    ws.addEventListener('close', () => console.log("[WS] Closed"));
+    ws.onerror = (err) => console.log("[WS] Error", err);
+    ws.onclose = () => console.log("[WS] Closed");
 
     if (typeof window !== 'undefined') {
       (window as any).gameWs = ws;
