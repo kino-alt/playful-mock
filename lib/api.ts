@@ -106,24 +106,27 @@ export const api = {
   connectWebSocket: (roomId: string, onMessage: (data: any) => void) => {
     if (!roomId) return { close: () => {} } as any;
 
-    const url = `${WS_BASE_URL}/api/rooms/${roomId}/ws`;
-    console.log("[WS] Connecting to:", url);
-    
-    const ws = new WebSocket(url);
+  const url = `${WS_BASE_URL}/api/rooms/${roomId}/ws`;
+  const ws = new WebSocket(url);
 
-    // 🔴 修正ポイント: addEventListener を使い、確実にイベントをキャッチする
-    ws.addEventListener('message', (event) => {
-      console.log("--- WS EVENT RECEIVED ---", event.data);
-      try {
-        const data = JSON.parse(event.data);
-        console.log("!!! WS DIRECT RECEIVE !!!", data);
-        if (onMessage) onMessage(data);
-      } catch (err) {
-        console.error("[WS] Parse Error:", err);
-      }
-    });
+  // 🔴 修正：'message' イベントリスナーを確実に一番最初に登録する
+  ws.addEventListener('message', (event) => {
+    // どんなデータが来ても、まず生で出力する
+    console.log(">>> WS RAW DATA RECEIVED:", event.data);
+    try {
+      const data = JSON.parse(event.data);
+      if (onMessage) onMessage(data);
+    } catch (err) {
+      console.error("[WS] Parse Error:", err);
+    }
+  });
 
-    ws.addEventListener('open', () => console.log("[WS] Opened"));
+  ws.addEventListener('open', () => {
+    console.log("[WS] Connection Opened");
+    // 接続した瞬間に一度フェッチを投げる
+    ws.send(JSON.stringify({ type: 'FETCH_PARTICIPANTS' }));
+  });
+
     ws.addEventListener('error', (err) => console.log("[WS] Error", err));
     ws.addEventListener('close', () => console.log("[WS] Closed"));
 
