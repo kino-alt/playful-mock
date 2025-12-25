@@ -51,7 +51,10 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
  // FIX: Include all fields of RoomState
   const [state, setState] = useState<RoomState>(initialRoomState);
 
-  const handleWS = useWsHandler(setState, state.myUserId);
+  const handleWS = useWsHandler(setState);
+  const handlerRef = React.useRef(handleWS);
+  handlerRef.current = handleWS;
+
   //check host
   const amIHost = state.participantsList.some(
     p => p.user_id === state.myUserId && p.role === 'host'
@@ -84,6 +87,7 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
   const joinRoom = useCallback(async (roomCode: string, userName: string) => {
     // APIレスポンス: { room_id, user_is, is_leader }
     const data = await api.joinRoom(roomCode, userName);
+    console.log("[Context] Join Room Response:", data);
     setState((prev) => ({
       ...prev,
       roomId: data.room_id,
@@ -167,20 +171,24 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
   }, [state.roomId,state.participantsList, state.myUserId]);
 
   // WebSocket ---------------------------------
-  useEffect(() => {
-    if (initialRoomId && !state.roomId) {
-        setState(prev => ({ 
-            ...prev, 
-            roomCode: initialRoomId
-        }));
-    }
-    
+ useEffect(() => {
     if (state.roomId) {
-        const ws = api.connectWebSocket(state.roomId, handleWS); 
-        return () => ws.close();
-    }
+      // 🔴 常に ref を経由してメッセージを処理する
+      const ws = api.connectWebSocket(state.roomId, (data) => handlerRef.current(data)); 
 
-  }, [state.roomId, handleWS, initialRoomId]);
+      const fetchTimer = setTimeout(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          console.log("[Context] Requesting participants...");
+          ws.send(JSON.stringify({ type: 'FETCH_PARTICIPANTS' }));
+        }
+      }, 1500);
+
+      return () => {
+        clearTimeout(fetchTimer);
+        ws.close();
+      };
+    }
+  }, [state.roomId]);
 
   return (
     <RoomContext.Provider

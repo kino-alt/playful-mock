@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { RoomState, GameState, Participant } from './types';
 
-export const useWsHandler = (setState: React.Dispatch<React.SetStateAction<RoomState>>, myUserId: string | null) => {
+export const useWsHandler = (setState: React.Dispatch<React.SetStateAction<RoomState>>) => {
 
     //ws message handler
     const handleWebSocketMessage = useCallback((eventData: any) => {
@@ -49,20 +49,19 @@ export const useWsHandler = (setState: React.Dispatch<React.SetStateAction<RoomS
                 break;
 
             //participant list update handler
-            case 'PARTICIPANT_UPDATE':
-                setState(prev => {
-                    const newParticipants = payload.participants as Participant[];
-                    console.log("My User ID:", prev.myUserId);
-                    const me = newParticipants.find(p => p.user_id === prev.myUserId);
-                    
-                    return { 
-                        ...prev, 
-                        participantsList: newParticipants,
-                        isLeader: me ? (String(me.is_Leader) === "true") : prev.isLeader, 
-                        globalError: null
-                    }
-                });
-                break;
+           case 'PARTICIPANT_UPDATE':
+            setState(prev => {
+                const newParticipants = payload.participants as Participant[];
+                const me = newParticipants.find(p => p.user_id === prev.myUserId);
+                
+                return { 
+                    ...prev, 
+                    participantsList: newParticipants,
+                    isLeader: me ? (String(me.is_Leader) === "true" || me.is_Leader === true) : prev.isLeader, 
+                    globalError: null
+                }
+            });
+            break;
 
             //timer tick handler
             case 'TIMER_TICK':
@@ -86,6 +85,6 @@ export const useWsHandler = (setState: React.Dispatch<React.SetStateAction<RoomS
             default:
                 console.warn(`[v0] Unknown WS message type: ${type}`);
         }
-    }, [setState, myUserId]);
+    }, [setState]);
     return handleWebSocketMessage;
 };

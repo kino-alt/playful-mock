@@ -110,13 +110,11 @@ export const api = {
     (window as any).gameWs = ws;
   }
 
-    ws.onopen = () => {
-      console.log("[WS] Connected:", roomId);
-    };
-
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        // ここでログを出して、ブラウザが生データを受け取っているか確認
+        console.log("[WS raw receive]", data); 
         onMessage(data);
       } catch (err) {
         console.error("[WS] Invalid message:", err);

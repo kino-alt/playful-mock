@@ -8,6 +8,32 @@ const gameWs = ws.link(`${WS_BASE_URL}/api/rooms/:room_id/ws`);
 let timerInterval: NodeJS.Timeout | null = null;
 const allClients = new Set<any>();
 
+const broadcast = (message: object) => {
+  const msgString = JSON.stringify(message);
+  
+  // allClients (Set) に入っている全クライアントへ送信
+  allClients.forEach((client) => {
+    if (client.readyState === 1) { // WebSocket.OPEN
+      client.send(msgString);
+    }
+  });
+};
+
+const broadcastParticipants = () => {
+    console.log("[MSW] Broadcasting participant list to", allClients.size, "clients");
+    broadcast({
+      type: 'PARTICIPANT_UPDATE',
+      payload: {
+        participants: [
+          { user_id: "aa", user_name: "ホスト", role: "host", is_Leader: true }, 
+          { user_id: "dummy1", user_name: "たいよう", role: "player", is_Leader: false },
+          { user_id: "dummy2", user_name: "しょう", role: "player", is_Leader: false },
+          { user_id: "bb", user_name: "あなた", role: "player", is_Leader: false },
+        ]
+      }
+    });
+  };
+
 
 export const handlers = [
   // --- 1. Room関連 (HTTP) ---
@@ -56,37 +82,19 @@ http.post('/api/rooms/:room_id/topic', async ({ params }) => {
   // --- 2. WebSocketのモック (gameWs.addEventListener をそのまま入れる) ---
   gameWs.addEventListener('connection', ({ client }) => {
     allClients.add(client);
-    console.log('[MSW] WS接続確立:', client.id, 'Total:', allClients.size);
+    console.log("[MSW] New Connection. Total:", allClients.size);
 
-    const broadcast = (message: object) => {
-      const msgString = JSON.stringify(message);
-      allClients.forEach((c) => {
-        if (c.readyState === 1) c.send(msgString);
-      });
-    };
-
-    // 🔴 接続から少し遅らせて送信（クライアントの準備時間を確保）
-    setTimeout(() => {
-      console.log("[MSW] Sending initial participant list...");
-      broadcast({
-        type: 'PARTICIPANT_UPDATE',
-        payload: {
-          participants: [
-            { user_id: "aa", user_name: "ホスト", role: "host", is_Leader: false }, 
-            { user_id: "dummy1", user_name: "たいよう", role: "player", is_Leader: false },
-            { user_id: "dummy2", user_name: "しょう", role: "player", is_Leader: false },
-          ]
-        }
-      });
-    }, 500);
+    // 接続時に自分を含む全員に現在のリストをブロードキャスト
+    setTimeout(broadcastParticipants, 500);
 
     client.addEventListener('message', (event) => {
       const data = JSON.parse(event.data as string);
-      console.log('[MSW] WSメッセージ受信:', data.type);
+      // 🔴 参加者リストの再要求コマンド（もしあれば）に対応する
+      if (data.type === 'FETCH_PARTICIPANTS') {
+        broadcastParticipants();
+    }
 
-      // 🔴 client.send をすべて broadcast に変更 🔴
-
-      if (data.type === 'WAITING' || data.type === 'START_GAME') {
+      if (data.type === 'WAITING') {
         broadcast({
           type: 'STATE_UPDATE',
           payload: { nextState: "setting_topic" }
@@ -123,8 +131,8 @@ http.post('/api/rooms/:room_id/topic', async ({ params }) => {
               selected_emojis: data.payload.emojis,
               assignments: [
                 { user_id: "aa", emoji: "🍎" },
-                { user_id: "bb", emoji: "🍇" },
-                { user_id: "dummy1", emoji: "🍎" },
+                { user_id: "bb", emoji: "🍎" },
+                { user_id: "dummy1", emoji: "👨" },
                 { user_id: "dummy2", emoji: "🏢" }
               ]
             }
