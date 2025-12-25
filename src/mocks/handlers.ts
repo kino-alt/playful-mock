@@ -11,54 +11,76 @@ const allClients = new Set<any>();
 const broadcast = (message: object) => {
   const msgString = JSON.stringify(message);
   
-  // allClients (Set) に入っている全クライアントへ送信
   allClients.forEach((client) => {
-    if (client.readyState === 1) { // WebSocket.OPEN
+    // 🔴 接続が OPEN (1) 以外なら即削除して送信をスキップ
+    if (client.readyState !== 1) {
+      allClients.delete(client);
+      return;
+    }
+
+    try {
       client.send(msgString);
+    } catch (e) {
+      console.error("[MSW] Send failed, removing client", e);
+      allClients.delete(client);
     }
   });
 };
 
+let currentParticipants = [
+  { user_id: "dummy1", user_name: "たいよう", role: "player", is_Leader: false },
+  { user_id: "dummy2", user_name: "しょう", role: "player", is_Leader: false },
+];
+
 const broadcastParticipants = () => {
-    console.log("[MSW] Broadcasting participant list to", allClients.size, "clients");
-    broadcast({
-      type: 'PARTICIPANT_UPDATE',
-      payload: {
-        participants: [
-          { user_id: "aa", user_name: "ホスト", role: "host", is_Leader: true }, 
-          { user_id: "dummy1", user_name: "たいよう", role: "player", is_Leader: false },
-          { user_id: "dummy2", user_name: "しょう", role: "player", is_Leader: false },
-          { user_id: "bb", user_name: "あなた", role: "player", is_Leader: false },
-        ]
-      }
-    });
-  };
+  console.log("[MSW] Broadcasting updated list:", currentParticipants);
+  broadcast({
+    type: 'PARTICIPANT_UPDATE',
+    payload: {
+      participants: currentParticipants
+    }
+  });
+};
 
 
 export const handlers = [
   // --- 1. Room関連 (HTTP) ---
   http.post('/api/rooms', async () => {
-    console.log("MSW: Intercepted /api/rooms!");
-    await delay(500);
-    return HttpResponse.json({
-      "room_id": "abc",
-      "user_id": "aa",
-      "room_code": "AAAAAA",
-      "theme": "人物",
-      "hint": "出身地、性別、やったこと",
-    }, { status: 201 });
-  }),
+  console.log("MSW: Intercepted /api/rooms!");
+  const hostUser = { user_id: "aa", user_name: "ホスト(あなた)", role: "host", is_Leader: true };
+  // ルーム作成時はリストをリセット（テストしやすくするため）
+  currentParticipants = [
+    hostUser,
+    { user_id: "dummy1", user_name: "たいよう", role: "player", is_Leader: false },
+    { user_id: "dummy2", user_name: "しょう", role: "player", is_Leader: false },
+  ];
+  await delay(500);
+ await delay(500);
+  return HttpResponse.json({
+    "room_id": "abc",
+    "user_id": "aa", // これが context の myUserId になる
+    "room_code": "AAAAAA",
+  }, { status: 201 });
+}),
 
-  http.post('/api/user', async ({ request }) => {
-    const body = await request.json() as any;
-    await delay(500);
-    if (body.room_code === "ERROR") return new HttpResponse(null, { status: 404 });
-    return HttpResponse.json({
-      "room_id": "abc",
-      "user_id": "bb",
-      "is_leader": true,
-    }, { status: 200 });
-  }),
+http.post('/api/user', async ({ request }) => {
+  const body = await request.json() as any;
+  const newUserId = "bb-" + Math.random().toString(36).substring(2, 7);
+
+  // 🔴 参加者をリストに追加
+  currentParticipants.push({
+    user_id: newUserId,
+    user_name: body.user_name || "ゲスト",
+    role: "player",
+    is_Leader: false, // 参加者はリーダーではない
+  });
+
+  return HttpResponse.json({
+    "room_id": "abc",
+    "user_id": newUserId,
+    "is_leader": "false", // 設計書の string 型に合わせる
+  }, { status: 200 });
+}),
 
 http.post('/api/rooms/:room_id/start', async ({ params }) => {
   // どの部屋のIDでリクエストが来たかログに出す
@@ -84,15 +106,20 @@ http.post('/api/rooms/:room_id/topic', async ({ params }) => {
     allClients.add(client);
     console.log("[MSW] New Connection. Total:", allClients.size);
 
-    // 接続時に自分を含む全員に現在のリストをブロードキャスト
-    setTimeout(broadcastParticipants, 500);
+    // 🔴 誰かが入室（接続）したら、即座に最新のリストを全員（ホスト含む）に送る
+    setTimeout(() => {
+      broadcastParticipants();
+    }, 500);
 
     client.addEventListener('message', (event) => {
+      // 🔴 受信自体ができているかログを出す
+      console.log("[MSW] Received message from client:", event.data);
+      
       const data = JSON.parse(event.data as string);
-      // 🔴 参加者リストの再要求コマンド（もしあれば）に対応する
       if (data.type === 'FETCH_PARTICIPANTS') {
+        console.log("[MSW] Manual fetch requested");
         broadcastParticipants();
-    }
+      }
 
       if (data.type === 'WAITING') {
         broadcast({

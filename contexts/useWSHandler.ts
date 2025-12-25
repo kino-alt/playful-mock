@@ -57,7 +57,7 @@ export const useWsHandler = (setState: React.Dispatch<React.SetStateAction<RoomS
                 return { 
                     ...prev, 
                     participantsList: newParticipants,
-                    isLeader: me ? (String(me.is_Leader) === "true" || me.is_Leader === true) : prev.isLeader, 
+                    isLeader: me ? (String(me.is_Leader) === "true" || me.is_Leader === true) : prev.isLeader,
                     globalError: null
                 }
             });

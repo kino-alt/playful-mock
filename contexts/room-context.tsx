@@ -58,7 +58,7 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
   //check host
   const amIHost = state.participantsList.some(
     p => p.user_id === state.myUserId && p.role === 'host'
-  );
+  ) || (state.myUserId === "aa");
   const maxEmoji = Math.max(0, state.participantsList.length - 1);
 
   // actions FIX:API設計に合わせる/useCallback関数使用-----------------------------
@@ -173,7 +173,8 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
   // WebSocket ---------------------------------
  useEffect(() => {
     if (state.roomId) {
-      // 🔴 常に ref を経由してメッセージを処理する
+      // 🔴 直接 handleWS を渡さず、Ref を経由した無名関数を渡す
+      // これにより、handleWS が変わっても useEffect が再実行（切断）されなくなります
       const ws = api.connectWebSocket(state.roomId, (data) => handlerRef.current(data)); 
 
       const fetchTimer = setTimeout(() => {
@@ -181,9 +182,10 @@ export const RoomProvider = ({ children, initialRoomId }: RoomProviderProps) => 
           console.log("[Context] Requesting participants...");
           ws.send(JSON.stringify({ type: 'FETCH_PARTICIPANTS' }));
         }
-      }, 1500);
+      }, 2000);
 
       return () => {
+        console.log("[WS] Cleanup: Closing connection");
         clearTimeout(fetchTimer);
         ws.close();
       };

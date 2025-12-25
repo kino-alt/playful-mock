@@ -104,30 +104,26 @@ export const api = {
    *  ws://.../api/rooms/{room_id}/ws
    *  ------------------------------- */
   connectWebSocket: (roomId: string, onMessage: (data: any) => void) => {
-    const ws = new WebSocket(`${WS_BASE_URL}/api/rooms/${roomId}/ws`);
+    if (!roomId) return { close: () => {} } as any;
 
+    const url = `${WS_BASE_URL}/api/rooms/${roomId}/ws`;
+    console.log("[WS] Connecting to:", url);
+    const ws = new WebSocket(url);
+
+    // 🔴 windowオブジェクトに保持（デバッグ・finishRoom用）
     if (typeof window !== 'undefined') {
-    (window as any).gameWs = ws;
-  }
+      (window as any).gameWs = ws;
+    }
 
     ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        // ここでログを出して、ブラウザが生データを受け取っているか確認
-        console.log("[WS raw receive]", data); 
-        onMessage(data);
-      } catch (err) {
-        console.error("[WS] Invalid message:", err);
-      }
+      const data = JSON.parse(event.data);
+      // 🔴 ブラウザのコンソールでこれが見えるかどうかが最重要です
+      console.log("!!! WS DIRECT RECEIVE !!!", data); 
+      onMessage(data);
     };
 
-    ws.onerror = (err) => {
-      console.error("[WS] Error:", err);
-    };
-
-    ws.onclose = () => {
-      console.log("[WS] Disconnected");
-    };
+    ws.onerror = (err) => console.error("[WS] Error:", err);
+    ws.onclose = () => console.log("[WS] Disconnected");
 
     return ws;
   },
