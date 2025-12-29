@@ -111,7 +111,7 @@ export function CreateTopic() {
               setTopicInput(val);
               if (step === "emoji") setStep("topic"); 
             }}
-            placeholder={hint ? `Ex. ${hint}` : "Enter your topic"}
+            placeholder={hint ? `例： ${hint}` : "Enter your topic"}
             inputtitle="TOPIC"
             height="py-3"
             variant="primary"

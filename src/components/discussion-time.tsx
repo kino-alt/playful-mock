@@ -53,11 +53,11 @@ export function DiscussionTime() {
         content={`1. 自分の絵文字を順番に言葉で説明していく\n2. テーマがなにかを考える\n3. お題がなにか導き出す`}
       />
 
-      <div className="w-full max-w-xs flex flex-col h-full">
+      <div className="w-full max-w-xs flex flex-col h-full mx-auto">
         
         {/* 1. Header Area */}
         <div className="flex flex-col">
-          <PageHeader title="Discussion" subtitle="Let's discuss emojis" marginBottom="mb-1" />
+          <PageHeader title="Discussion" subtitle="Find the imposter!" marginBottom="mb-1" />
           
           <div className="w-full flex justify-between items-center mb-0">
             <div className="min-w-[60px]">
@@ -65,8 +65,8 @@ export function DiscussionTime() {
                 <TextDisplay
                   value="Leader"
                   inputtitle=""
-                  height="py-1"
-                  variant="primary"
+                  height="py-0.5"
+                  variant="secondary"
                   textSize="text-[10px]"
                   marginBottom="mb-0" 
                 />
@@ -75,46 +75,64 @@ export function DiscussionTime() {
           </div>
         </div>
 
-        {/* 2. Main Content Area - 他のUIと調和させたシンプルデザイン */}
-        <div className="flex flex-col items-center justify-start flex-grow space-y-1 pt-3">
+        {/* 2. Main Content Area */}
+        <div className="flex flex-col items-center justify-start flex-grow space-y-0 pt-3">
           <div className="w-full">
             <CountTimer timervalue={timer} height="py-6" />
           </div>
           
-          {/* Emoji Display Area */}
-          <div className="relative w-full max-w-[250px]">
-           <div className="flex items-center space-x-2 mb-4">
-              <div className="flex items-center bg-amber-50 border border-amber-200 px-4 py-1.5 rounded-full shadow-sm whitespace-nowrap flex-shrink-0">
-                <span className="text-amber-500 mr-2 text-xs animate-pulse">📢</span>
-                <p className="text-[10px] text-amber-700 font-black uppercase tracking-wider">
-                  Describe this to your friends!
-                </p>
+          {/* Emoji Display Area*/}
+          <div className="flex flex-col items-center w-full">
+            
+            {/* ダミー告知ラベル*/}
+            <div className="flex flex-col items-center justify-center space-y-3 mb-2 w-full">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-rose-400 rounded-full blur opacity-25 animate-pulse"></div>
+                
+                <div className="relative flex items-center bg-white border-2 border-amber-500 pl-1 pr-4 py-1.5 rounded-full shadow-[0_4px_0_0_#f59e0b]">
+                  {/* 1 DUMMY バッジ */}
+                  <div className="flex items-center justify-center bg-amber-500 text-white px-3 py-1 rounded-full mr-3 shadow-inner">
+                    <span className="text-[12px] font-black tracking-tighter">1 DUMMY</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-[10px] text-amber-600 font-black leading-none uppercase tracking-widest mb-1">
+                      Intruder Detected!
+                    </p>
+                    <p className="text-[8px] text-gray-400 font-bold uppercase tracking-tighter">
+                      Find the fake description
+                    </p>
+                  </div>
+                </div>
               </div>
+
+              {/* ヒントボタン */}
               <button
                 onClick={handleToggleHintOverlay}
-                className="w-5 h-5 flex-shrink-0 rounded-full bg-white border border-gray-200 text-gray-400 font-bold flex items-center justify-center text-xs shadow-sm hover:border-amber-400 hover:text-amber-500 transition-all"
+                className="flex items-center gap-1.5 text-gray-400 hover:text-amber-500 transition-colors"
               >
-                ?
+                <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold border border-gray-200">?</div>
+                <span className="text-[10px] font-black uppercase tracking-widest">Discussion Tips</span>
               </button>
             </div>
 
-            {/* メインコンテナ */}
-            <div className="relative w-full h-[160px] bg-white border-[3px] border-gray-300 rounded-[3rem] shadow-[0_8px_0_0_rgba(245,158,11,0.5)] flex items-center justify-center">
+            {/* メインコンテナ*/}
+            <div className="relative w-full max-w-[180px] h-[150px] bg-white border-[3px] border-gray-300 rounded-[2.5rem] shadow-[0_8px_0_0_rgba(245,158,11,0.7)] flex items-center justify-center mx-auto">
               {/* 吹き出しのしっぽ */}
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 bg-white border-b-[3px] border-r-[3px] border-gray-300 rotate-45 rounded-sm"></div>               
               {/* 絵文字 */}
-              <p className="text-[80px] sm:text-[90px] select-none z-10 drop-shadow-sm leading-none">
+              <p className="text-[80px] select-none z-10 drop-shadow-sm leading-none">
                 {AssignedEmoji || ""}
               </p>
             </div>
+
             {/* 下部の補足 */}
-            <p className="mt-4 text-[10px] text-gray-400 font-medium text-center italic">
-              — This is your assigned emoji —
+            <p className="mt-4 text-[9px] text-amber-500 font-black text-center uppercase tracking-widest">
+              — Your Emoji —
             </p>
           </div>
         </div>
 
-        {/* 3. Footer Button Area - 他ページと位置を統一 */}
+        {/* 3. Footer Button Area */}
         <div className="mt-auto ">
           {isLeader ? (
             <GameButton onClick={handleSkip} variant="secondary">
